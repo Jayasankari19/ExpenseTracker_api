@@ -48,17 +48,37 @@ app.post('/expense-datas',function(request,response){
 }) 
 
 
-app.get('/get-data',function(request,response){
-   const entries=[]
-   db.collection('ExpenseData').find().forEach(entry=>entries.push(entry)).then(function(){
-         response.status(200).json(entries)
-   }).catch(function(error){
-      response.status(404).json({
-         'error':error
-      })
-   })
+// app.get('/get-data',function(request,response){
+//    const entries=[]
+//    db.collection('ExpenseData').find().forEach(entry=>entries.push(entry)).then(function(){
+//          response.status(200).json(entries)
+//    }).catch(function(error){
+//       response.status(404).json({
+//          'error':error
+//       })
+//    })
 
-})
+// })
+
+
+
+app.get('/get-data', async function(request, response) {
+   try {
+       let query = {};
+       if (request.query.category) {
+           query = { category: request.query.category };
+           console.log('Query parameter received:', request.query.category);
+       }
+
+       const result = await db.collection('ExpenseData').find(query).toArray();
+       response.status(200).json(result);
+   } catch (error) {
+       response.status(500).json({
+           'error': error.message
+       });
+   }
+});
+
 
 
 
